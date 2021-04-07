@@ -80,7 +80,7 @@ function recordVenmoPayment(id, date, payee, amount) {
     payee: payee,
     amount: amount,
     currency: 'usd',
-    notes: '',
+    notes: 'VenmoEmail',
     status: 'uncleared',
     is_group: false,
   };
