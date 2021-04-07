@@ -43,6 +43,7 @@ function handleVenmoEmail(emailJSON) {
     id = idMatch['groups']['id'];
   } else {
     console.error('Could not find Payment ID. Skipping.');
+    return;
   }
 
   let date = emailJSON['date'];
