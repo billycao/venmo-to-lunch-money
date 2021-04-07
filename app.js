@@ -33,9 +33,9 @@ app.post('/incoming-emails', (req, res, next) => {
 const port = 3001
 app.listen(port);
 
-// let emailTxt = fs.readFileSync('email.txt', 'utf8');
-// let emailJSON = JSON.parse(emailTxt);
-// handleVenmoEmail(emailJSON);
+let emailTxt = fs.readFileSync('email.txt', 'utf8');
+let emailJSON = JSON.parse(emailTxt);
+handleVenmoEmail(emailJSON);
 
 function handleVenmoEmail(emailJSON) {
   let subject = emailJSON['headers']['subject'];
@@ -49,6 +49,11 @@ function handleVenmoEmail(emailJSON) {
   }
 
   let date = emailJSON['date'];
+  let dateMatch = emailJSON['html'].match(/(?<date>[A-Z][a-z][a-z]\ [0-9][0-9],\ [0-9][0-9][0-9][0-9])\ PDT/);
+  if (dateMatch) {
+    dateObj = new Date(Date.parse(dateMatch['groups']['date']));
+    date = dateObj.toISOString();
+  }
 
   let payee = '';
   let amount = '';
@@ -94,13 +99,13 @@ function recordVenmoPayment(id, date, payee, amount) {
   };
   console.log('Sending transaction to Lunch Money:');
   console.log(draftTransaction);
-  lunchMoney.createTransactions(
-    [draftTransaction],
-    false,
-    false,
-    false)
-  .then(
-    (res) => { console.log(res) },
-    (err) => { console.error(err) });
+  // lunchMoney.createTransactions(
+  //   [draftTransaction],
+  //   false,
+  //   false,
+  //   false)
+  // .then(
+  //   (res) => { console.log(res) },
+  //   (err) => { console.error(err) });
 }
 
