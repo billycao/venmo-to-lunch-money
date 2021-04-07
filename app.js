@@ -38,17 +38,18 @@ app.listen(port);
 // handleVenmoEmail(emailJSON);
 
 function handleVenmoEmail(emailJSON) {
+  let subject = emailJSON['headers']['subject'];
+
   let idMatch = emailJSON['html'].match(/Payment\ ID:\ (?<id>\d+)/);
   if (idMatch) {
     id = idMatch['groups']['id'];
   } else {
-    console.error('Could not find Payment ID. Skipping.');
+    console.error(`Could not find Payment ID for "${subject}". Skipping.`);
     return;
   }
 
   let date = emailJSON['date'];
 
-  let subject = emailJSON['headers']['subject'];
   let payee = '';
   let amount = '';
   let match = null;
