@@ -9,31 +9,35 @@ const app = express();
 
 const lunchMoney = new LunchMoney({ token: config.get('lunch-money.api-token') });
 
-// app.post('/incoming-emails', (req, res, next) => {
-//   const form = formidable();
-// 
-//   form.parse(req, (err, fields, files) => {
-//     if (err) {
-//       next(err);
-//       return;
-//     }
-//     emailTxt = fields['mailinMsg'];
-//     emailJSON = JSON.parse(emailTxt);
-// 
-//     fs.writeFileSync('email.txt', JSON.stringify(emailJSON));
-// 
-//     res.end();
-//   });
-// });
-// 
-// const port = 3001
-// app.listen(port);
+// We provide a GET endpoint to play nice with mailin.
+app.get('/incoming-emails', (req, res) => {
+  res.end();
+});
 
-let emailTxt = fs.readFileSync('email.txt', 'utf8');
-let emailJSON = JSON.parse(emailTxt);
-parseVenmoEmail(emailJSON);
+app.post('/incoming-emails', (req, res, next) => {
+  const form = formidable();
 
-function parseVenmoEmail(emailJSON) {
+  form.parse(req, (err, fields, files) => {
+    if (err) {
+      next(err);
+      return;
+    }
+    emailTxt = fields['mailinMsg'];
+    emailJSON = JSON.parse(emailTxt);
+    handleVenmoEmail(emailJSON);
+
+    res.end();
+  });
+});
+
+const port = 3001
+app.listen(port);
+
+// let emailTxt = fs.readFileSync('email.txt', 'utf8');
+// let emailJSON = JSON.parse(emailTxt);
+// handleVenmoEmail(emailJSON);
+
+function handleVenmoEmail(emailJSON) {
   let id = emailJSON['html'].match(/Payment\ ID:\ (?<id>\d+)/)['groups']['id'];
   let date = emailJSON['date'];
 
@@ -41,7 +45,6 @@ function parseVenmoEmail(emailJSON) {
   let memo = htmlRoot.querySelectorAll('table > tbody > tr:first-child > td:nth-child(2) > div:nth-child(2) > p')[0].text;
 
   let subject = emailJSON['headers']['subject'];
-  subject = 'Patrick Chu paid you $5.00';
   let payee = '';
   let amount = '';
   let match = null;
@@ -78,16 +81,16 @@ function recordVenmoPayment(id, date, payee, amount) {
     amount: amount,
     currency: 'usd',
     notes: '',
-    status: 'uncleared'
+    status: 'uncleared',
+    is_group: false,
   };
   console.log('Sending transaction to Lunch Money:');
   console.log(draftTransaction);
-  lunchMoney.createTransactions({
-    transactions: [draftTransaction],
-    applyRules: false,
-    checkForRecurring: false,
-    debitAsNegative: false
-  })
+  lunchMoney.createTransactions(
+    [draftTransaction],
+    false,
+    false,
+    false)
   .then(
     (res) => { console.log(res) },
     (err) => { console.error(err) });
