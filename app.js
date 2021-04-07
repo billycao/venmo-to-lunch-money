@@ -38,11 +38,14 @@ app.listen(port);
 // handleVenmoEmail(emailJSON);
 
 function handleVenmoEmail(emailJSON) {
-  let id = emailJSON['html'].match(/Payment\ ID:\ (?<id>\d+)/)['groups']['id'];
-  let date = emailJSON['date'];
+  let idMatch = emailJSON['html'].match(/Payment\ ID:\ (?<id>\d+)/);
+  if (idMatch) {
+    id = idMatch['groups']['id'];
+  } else {
+    console.error('Could not find Payment ID. Skipping.');
+  }
 
-  let htmlRoot = htmlParser.parse(emailJSON['html']);
-  let memo = htmlRoot.querySelectorAll('table > tbody > tr:first-child > td:nth-child(2) > div:nth-child(2) > p')[0].text;
+  let date = emailJSON['date'];
 
   let subject = emailJSON['headers']['subject'];
   let payee = '';
@@ -69,6 +72,9 @@ function handleVenmoEmail(emailJSON) {
   }
   payee = match['groups']['recipient'];
   amount = sign + match['groups']['amount'];
+
+  let htmlRoot = htmlParser.parse(emailJSON['html']);
+  let memo = htmlRoot.querySelectorAll('table > tbody > tr:first-child > td:nth-child(2) > div:nth-child(2) > p')[0].text;
 
   recordVenmoPayment(id, date, payee + ' - ' + memo, amount);
 }
