@@ -19,7 +19,7 @@ anyone else looking to include Venmo transactions in Lunch Money.
 
 ### How it works
 
-![Data Flow](docs/img/data-flow-diagram.png)
+![Data Flow](doc/img/data-flow-diagram.png)
 
 1. Venmo sends email to you.
 2. You send email to your server, running [mailin](mailin).
