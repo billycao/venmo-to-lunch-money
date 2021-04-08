@@ -2,11 +2,8 @@
 
 An Express.js based app that transforms Venmo emails into [Lunch Money](lunch-money) transactions.
 
-:warning: **This script is not yet publish-quality yet.**
-
-This just the result of one evening hack session. Several tasks remain before
-it is ready for prime time. I've made this available in case it's useful to
-anyone else looking to include Venmo transactions in Lunch Money.
+This project is just a result of a two-night hack session. I can't guarantee
+correctness or privacy conciousness.
 **Use at your own risk.**
 
 ## Table of Contents
@@ -21,10 +18,10 @@ anyone else looking to include Venmo transactions in Lunch Money.
 
 ![Data Flow](doc/img/data-flow-diagram.png)
 
-1. Venmo sends email to you.
-2. You send email to your server, running [mailin](mailin).
-3. Mailin sends a JSON object to **venmo-to-lunch-money**.
-4. venmo-to-lunch-money creates a Lunch Money transaction.
+1. Venmo sends an email to you.
+2. You forward the email to your server, running [mailin](mailin).
+3. mailin sends a JSON object to **venmo-to-lunch-money**.
+4. **venmo-to-lunch-money** creates a Lunch Money transaction.
 
 ## Installation
 
@@ -33,6 +30,9 @@ anyone else looking to include Venmo transactions in Lunch Money.
 To use **venmo-to-lunch-money**, you need to set up a server that can receive
 emails and run [mailin](mailin). This is non-trivial and out of the scope of this
 README, but the documentation in the mailin link is pretty bomb.
+
+As part of this, you will probably have to create an MX record for your server.
+Details are also in the [mailin documentation](mailin).
 
 After you have your server set up and ready to accept emails, you can run mailin
 with a command like
@@ -65,6 +65,10 @@ cd venmo-to-lunch-money
 npm install
 npm start
 ```
+
+4. Send emails to `nobody@myself.my-server.com`.
+
+Where "myself.my-server.com" is the MX record and server you set up running mailin.
 
 ## Configuration
 
