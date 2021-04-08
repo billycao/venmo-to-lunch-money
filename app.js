@@ -10,12 +10,12 @@ const app = express();
 const lunchMoney = new LunchMoney({ token: config.get('lunch-money.api-token') });
 
 function sendTransaction(draftTransaction) {
-  lunchMoney.createTransactions({
-    transactions: [draftTransaction],
-    applyRules: config.get('venmo-email.apply-rules'),
-    checkForRecurring: config.get('venmo-email.check-for-recurring'),
-    debitAsNegative: false
-  })
+  lunchMoney.createTransactions(
+    [draftTransaction],
+    config.get('venmo-email.apply-rules'),
+    config.get('venmo-email.check-for-recurring'),
+    false  // debitAsNegative
+  )
   .then(
     (res) => { console.log(res) },
     (err) => { console.error(err) }
@@ -55,12 +55,7 @@ app.post(httpEndpoint, (req, res, next) => {
   });
 });
 
-// const port = process.env.EXPRESS_PORT || config.get('express.default-http-port');
-// const host = config.get('express.http-host');
-// console.log(`Listening for new emails POSTed by mailin to http://${host}:${port}${httpEndpoint}`);
-// app.listen(port);
-
-const email = JSON.parse(fs.readFileSync('email.txt'));
-let venmoEmail = new VenmoEmail(email);
-console.log(venmoEmail.getDraftTransaction());
-sendTransaction(venmoEmail.getDraftTransaction())
+const port = process.env.EXPRESS_PORT || config.get('express.default-http-port');
+const host = config.get('express.http-host');
+console.log(`Listening for new emails POSTed by mailin to http://${host}:${port}${httpEndpoint}`);
+app.listen(port);
