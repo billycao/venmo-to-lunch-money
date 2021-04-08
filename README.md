@@ -1,6 +1,6 @@
 # Venmo to Lunch Money
 
-An Express.js based app that transforms Venmo emails into [Lunch Money](lunch-money) transactions.
+An Express.js based app that transforms Venmo emails into [Lunch Money][lunch-money] transactions.
 
 This project is just a result of a two-night hack session. I can't guarantee
 correctness or privacy conciousness.
@@ -19,7 +19,7 @@ correctness or privacy conciousness.
 ![Data Flow](doc/img/data-flow-diagram.png)
 
 1. Venmo sends an email to you.
-2. You forward the email to your server, running [mailin](mailin).
+2. You forward the email to your server, running [mailin][mailin].
 3. mailin sends a JSON object to **venmo-to-lunch-money**.
 4. **venmo-to-lunch-money** creates a Lunch Money transaction.
 
@@ -28,11 +28,11 @@ correctness or privacy conciousness.
 ### Set up mailin.
 
 To use **venmo-to-lunch-money**, you need to set up a server that can receive
-emails and run [mailin](mailin). This is non-trivial and out of the scope of this
+emails and run [mailin][mailin]. This is non-trivial and out of the scope of this
 README, but the documentation in the mailin link is pretty bomb.
 
 As part of this, you will probably have to create an MX record for your server.
-Details are also in the [mailin documentation](mailin).
+Details are also in the [mailin documentation][mailin].
 
 After you have your server set up and ready to accept emails, you can run mailin
 with a command like
