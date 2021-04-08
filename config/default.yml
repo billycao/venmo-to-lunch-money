@@ -1,2 +1,31 @@
+express:
+  # Note that default-http-port can be overriden by $EXPRESS_PORT.
+  default-http-port: 3001
+  http-host: 'localhost'
+  http-endpoint: '/incoming-emails'
+
 lunch-money:
   api-token: ''
+
+venmo-email:
+  # TODO(billycao): Extract currency from email.
+  currency: 'usd'
+  # note to add to each Lunch Money transaction.
+  note: 'VenmoEmail'
+  # One of "cleared" or "uncleared". See https://lunchmoney.dev/#transaction-object
+  state: 'uncleared'
+  apply-rules: true
+  check-for-recurring: false
+
+  # id-regex should contain a named capture group "id".
+  id-regex: Payment\ ID:\ (?<id>\d+)
+  # date-regex should contain a named capture group "date".
+  date-regex: (?<date>[A-Z][a-z][a-z]\ [0-9][0-9],\ [0-9][0-9][0-9][0-9])\ PDT
+  # subject regexes should contain named capture groups "payee" and "amount".
+  subject-debit-regexes:
+    - You\ paid (?<payee>.+)\ \$(?<amount>.+)
+    - You\ completed (?<payee>.+)'s\ \$(?<amount>.+)\ c.+
+  subject-credit-regexes:
+    - (?:Fwd:)?(?:Re:)?\ ?(?<payee>.+)\ paid\ your\ \$(?<amount>.+)\ request
+    - (?:Fwd:)?(?:Re:)?\ ?(?<payee>.+)\ paid\ you\ \$(?<amount>.+)
+  memo-css-selector: 'table > tbody > tr:first-child > td:nth-child(2) > div:nth-child(2) > p'
