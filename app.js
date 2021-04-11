@@ -39,7 +39,9 @@ app.post(httpEndpoint, (req, res, next) => {
     }
 
     if ('mailinMsg' in fields) {
-      let venmoEmail = new VenmoEmail(JSON.parse(fields['mailinMsg']));
+      let emailObj = JSON.parse(fields['mailinMsg']);
+      console.log(`Processing ${emailObj['headers']['subject']}`);
+      let venmoEmail = new VenmoEmail(emailObj);
       draftTransaction = venmoEmail.getDraftTransaction();
       if (draftTransaction) {
         console.log('Sending transaction to Lunch Money:');

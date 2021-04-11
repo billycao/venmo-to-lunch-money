@@ -56,7 +56,7 @@ class VenmoEmail {
         return [match['groups']['payee'], '-' + match['groups']['amount']];
       }
     }
-    return;
+    return [null, null];
   }
 
   getPaymentID() {
