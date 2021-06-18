@@ -1,5 +1,6 @@
 const config = require('config');
 const htmlParser = require('node-html-parser');
+const replaceString = require('replace-string');
 
 class VenmoEmail {
   emailJSON;
@@ -98,6 +99,8 @@ class VenmoEmail {
       console.log(`Unrecognized email subject: ${subject}`);
       return;
     }
+    // Remove commas for amounts like 1,000
+    amount = replaceString(amount, ',', '');
 
     let id = this.getPaymentID();
     let date = this.getPaymentDateAsISOString();
