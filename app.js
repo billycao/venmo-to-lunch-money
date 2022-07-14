@@ -3,24 +3,31 @@ const express = require('express');
 const formidable = require('formidable');
 const fs = require('fs');
 const path = require('path');
+
+const kfs = require('key-file-storage')(
+  path.join(__dirname, 'bin'));
 const LunchMoney = require('lunch-money').default;
 const NodeCache = require('node-cache');
+
 const VenmoEmail = require('./venmo-lib');
 
 const app = express();
 
-// Add getTags() function to lunch-money API.
-// TODO(billy): Add to lunch-money core package.
-LunchMoney.prototype['getTags'] = async function() {
-  return await lunchMoney.get('/v1/tags');
-}
 
 const lunchMoney = new LunchMoney({ token: config.get('lunch-money.api-token') });
 
 const lmCache = new NodeCache();
 
+
+// Sends transaction unless transaction is duplicate.
 function sendTransaction(draftTransaction) {
-  if (!config.get('lunch-money.dry-run')) {
+  if (!config.get('lunch-money.dryrun')) {
+    const isDuplicate = kfs[draftTransaction.venmoPaymentID];
+    if (isDuplicate) {
+      console.log(`Duplicate transaction ${draftTransaction.venmoPaymentID}. Skipping...`);
+      return;
+    }
+
     lunchMoney.createTransactions(
       [draftTransaction],
       config.get('venmo-email.apply-rules'),
@@ -28,41 +35,17 @@ function sendTransaction(draftTransaction) {
       false  // debitAsNegative
     )
     .then(
-      (res) => { console.log(res) },
+      (res) => {
+        id = res.ids[0];
+        console.log(`Successfully created transaction ID ${id}`);
+        kfs[draftTransaction.venmoPaymentID] = true;
+      },
       (err) => { console.error(err) }
     );
+  } else {
+    console.log('dryrun == true, disabling send.');
   }
 }
-
-// Return the Lunch Money Tag objects to add to transactions.
-async function getTags() {
-  configTags = config.get('lunch-money.include-tags');
-  if (configTags.length == 0) return;
-
-  txnTags = lmCache.get('txnTags');
-  if (txnTags == undefined) {
-    return new Promise((resolve, reject) => {
-      lunchMoney.getTags().then(
-        (res) => {
-          tags = [];
-          for (const tag of res) {
-            if (configTags.includes(tag['name'])) {
-              tags.push(tag);
-            }
-          }
-          lmCache.set('txnTags', tags, 86400);
-          resolve(tags);
-        },
-        (err) => {
-          console.log('Could not fetch Lunch Money tags.');
-          reject(err);
-        }
-      );
-    });
-  }
-  return txnTags;
-}
-module.exports.getTags = getTags;
 
 // We provide a GET endpoint to play nice with mailin.
 httpEndpoint = config.get('express.http-endpoint');
@@ -103,8 +86,6 @@ app.post(httpEndpoint, (req, res, next) => {
       let draftTransaction = venmoEmail.getDraftTransaction();
 
       if (draftTransaction) {
-        draftTransaction.tags = await getTags();
-
         console.log('Sending transaction to Lunch Money:');
         console.log(draftTransaction);
         sendTransaction(draftTransaction);

@@ -37,6 +37,8 @@ class VenmoEmail {
     this.defaultCurrency = config.get('venmo-email.currency');
     this.defaultNote = config.get('venmo-email.note');
     this.defaultState = config.get('venmo-email.state');
+
+    this.tags = config.get('lunch-money.include-tags');
   }
 
   getSubject() {
@@ -115,6 +117,7 @@ class VenmoEmail {
       currency: this.defaultCurrency,
       notes: this.defaultNote,
       status: this.defaultState,
+      tags: this.tags
     };
   }
 

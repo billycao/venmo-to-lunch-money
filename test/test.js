@@ -27,26 +27,12 @@ describe('VenmoEmail', function() {
     let venmoEmail = new VenmoEmail(emailObj);
     let draftTransaction = venmoEmail.getDraftTransaction();
 
+    console.log(draftTransaction);
+
     assert.equal(draftTransaction.venmoPaymentID, '3578806278201171470');
     assert.equal(draftTransaction.date, emailDate);
     assert.equal(draftTransaction.amount, '2.49');
     assert(draftTransaction.payee.includes('Rahul Gupta-Iwasaki'));
     assert(draftTransaction.payee.includes('Poker'));
-  });
-});
-
-describe('app', function() {
-  describe('getTags', function() {
-    it('should get tags from Lunch Money', function(done) {
-      tags = app.getTags();
-      tags.then(
-        (res) => {
-          assert.equal(res[0].id, 9970);
-          assert.equal(res[0].name, 'venmo-email');
-          done();
-        },
-        (err) => { done(err); }
-      );
-    });
   });
 });
