@@ -3,7 +3,7 @@ const htmlParser = require('node-html-parser');
 const replaceString = require('replace-string');
 
 class VenmoEmail {
-  emailJSON;
+  emailObj;
 
   dateRegex;
   idRegex;
@@ -15,8 +15,8 @@ class VenmoEmail {
   defaultNote;
   defaultState;
 
-  constructor(emailJSON) {
-    this.emailJSON = emailJSON;
+  constructor(emailOBJ) {
+    this.emailOBJ = emailOBJ;
     // TODO(billycao): Validate POST or JSON contents.
     // TODO(billycao): Honestly we should just use Typescript for this...
 
@@ -40,7 +40,7 @@ class VenmoEmail {
   }
 
   getSubject() {
-    return this.emailJSON['headers']['subject'];
+    return this.emailOBJ['headers']['subject'];
   }
 
   getPayeeAndAmountFromSubject() {
@@ -61,7 +61,7 @@ class VenmoEmail {
   }
 
   getPaymentID() {
-    let idMatch = this.emailJSON['html'].match(this.idRegex);
+    let idMatch = this.emailOBJ['html'].match(this.idRegex);
     if (idMatch) {
       if ('groups' in idMatch && 'id' in idMatch['groups']) {
         return idMatch['groups']['id'];
@@ -73,17 +73,17 @@ class VenmoEmail {
   }
 
   getPaymentDateAsISOString() {
-    let dateMatch = this.emailJSON['html'].match(this.dateRegex);
+    let dateMatch = this.emailOBJ['html'].match(this.dateRegex);
     if (dateMatch) {
       let dateObj = new Date(Date.parse(dateMatch['groups']['date']));
       return dateObj.toISOString();
     }
     console.warn('Could not extract payment date from email body. Falling back to email date.');
-    return this.emailJSON['date'];
+    return this.emailOBJ['date'];
   }
 
   getPaymentMemo() {
-    let htmlRoot = htmlParser.parse(this.emailJSON['html']);
+    let htmlRoot = htmlParser.parse(this.emailOBJ['html']);
     let memoElems = htmlRoot.querySelectorAll(this.memoCSSSelector);
     if (!memoElems.length) {
       console.error('Could not extract memo from email. Is memo-css-selector correct?');
@@ -108,7 +108,7 @@ class VenmoEmail {
     if  (!(id && date && memo)) return;
 
     return {
-      external_id: id,
+      venmoPaymentID: id,
       date: date,
       payee: payee + ' - ' + memo,
       amount: amount,

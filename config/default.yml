@@ -1,17 +1,23 @@
+logging:
+  logdir: ''
+
 express:
-  # Note that default-http-port can be overriden by $EXPRESS_PORT.
+  # Note: default-http-port can be overriden by $EXPRESS_PORT.
   default-http-port: 3001
   http-host: 'localhost'
   http-endpoint: '/incoming-emails'
 
 lunch-money:
+  dryrun: false
   api-token: ''
+  # Existing tags to add to created transactions.
+  include-tags: []
 
 venmo-email:
   # TODO(billycao): Extract currency from email.
   currency: 'usd'
-  # note to add to each Lunch Money transaction.
-  note: 'VenmoEmail'
+  # Note to set for new Lunch Money transactions.
+  note: ''
   # One of "cleared" or "uncleared". See https://lunchmoney.dev/#transaction-object
   state: 'uncleared'
   apply-rules: true
