@@ -1,6 +1,5 @@
 const config = require('config');
 const htmlParser = require('node-html-parser');
-const replaceString = require('replace-string');
 
 class VenmoEmail {
   emailObj;
@@ -78,6 +77,7 @@ class VenmoEmail {
     let dateMatch = this.emailOBJ['html'].match(this.dateRegex);
     if (dateMatch) {
       let dateObj = new Date(Date.parse(dateMatch['groups']['date']));
+      dateObj.setMinutes(dateObj.getMinutes() - dateObj.getTimezoneOffset());
       return dateObj.toISOString();
     }
     console.warn('Could not extract payment date from email body. Falling back to email date.');
@@ -102,7 +102,7 @@ class VenmoEmail {
       return;
     }
     // Remove commas for amounts like 1,000
-    amount = replaceString(amount, ',', '');
+    amount = amount.replaceAll(',', '');
 
     let id = this.getPaymentID();
     let date = this.getPaymentDateAsISOString();

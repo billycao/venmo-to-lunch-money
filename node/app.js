@@ -4,7 +4,7 @@ const formidable = require('formidable');
 const fs = require('fs');
 const path = require('path');
 
-const kfs = require('key-file-storage')(
+const keyFileStorage = require('key-file-storage').default(
   path.join(__dirname, 'bin'));
 const LunchMoney = require('lunch-money').default;
 const NodeCache = require('node-cache');

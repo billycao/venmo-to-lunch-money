@@ -14,11 +14,11 @@ describe('VenmoEmail', function() {
     let emailHTML = fs.readFileSync(
       path.join(__dirname, '../testdata/venmo-send-money-email.txt'),
       {'encoding': 'utf-8'});
-    let emailDate = '2022-07-09T07:00:00.000Z';
+    let emailDate = '2023-02-12T16:29:00.000Z';
 
     let emailObj = {
       'headers': {
-        'subject': 'You paid Rahul Gupta-Iwasaki $2.49'
+        'subject': 'You paid Angela Lau $10.00'
       },
       'date': emailDate,
       'html': emailHTML
@@ -29,10 +29,10 @@ describe('VenmoEmail', function() {
 
     console.log(draftTransaction);
 
-    assert.equal(draftTransaction.venmoPaymentID, '3578806278201171470');
-    assert.equal(draftTransaction.date, emailDate);
-    assert.equal(draftTransaction.amount, '2.49');
-    assert(draftTransaction.payee.includes('Rahul Gupta-Iwasaki'));
-    assert(draftTransaction.payee.includes('Poker'));
+    assert.equal(draftTransaction.venmoPaymentID, '3736958406176898632');
+    assert.equal(draftTransaction.date, '2023-02-12T00:00:00.000Z');
+    assert.equal(draftTransaction.amount, '10.00');
+    assert(draftTransaction.payee.includes('Angela Lau'));
+    assert(draftTransaction.payee.includes('Gas for rental car'));
   });
 });
