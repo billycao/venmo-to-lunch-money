@@ -13,8 +13,8 @@ const VenmoEmail = require('./venmo-lib');
 
 const app = express();
 
-
-const lunchMoney = new LunchMoney({ token: config.get('lunch-money.api-token') });
+const apiToken = process.env.API_TOKEN || config.get('lunch-money.api-token')
+const lunchMoney = new LunchMoney({ token: apiToken });
 
 const lmCache = new NodeCache();
 
