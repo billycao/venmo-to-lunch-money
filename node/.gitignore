@@ -118,3 +118,4 @@ dist
 *.swp
 email.txt
 testdata/
+built/

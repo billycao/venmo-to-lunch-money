@@ -1,19 +1,21 @@
 # Venmo to Lunch Money
 
-An Express.js based app that transforms Venmo emails into [Lunch Money][lunch-money] transactions.
+A simple SMTP server that transforms Venmo emails into [Lunch Money][lunch-money] transactions.
 
 This project is just a result of a two-night hack session. I can't guarantee
 correctness or privacy conciousness.
+
 **Use at your own risk.**
 
 ## Table of Contents
 
 - [Background](#Background)
-- [Installation](#installation)
-- [Usage](#usage)
+- [Installation](#Installation)
+- [Configuration](#Configuration)
 
 ## Background
 
+<!--
 ### How it works
 
 ![Data Flow](doc/img/data-flow-diagram.png)
@@ -22,29 +24,20 @@ correctness or privacy conciousness.
 2. You forward the email to your server, running [mailin][mailin].
 3. mailin sends a JSON object to **venmo-to-lunch-money**.
 4. **venmo-to-lunch-money** creates a Lunch Money transaction.
+-->
 
 ## Installation
 
-### Set up mailin.
+Previously, venmo-to-lunch-money used an external service ([mailin][mailin]) to receive emails
+and POST those emails to it as a webhook.
 
-To use **venmo-to-lunch-money**, you need to set up a server that can receive
-emails and run [mailin][mailin]. This is non-trivial and out of the scope of this
-README, but the documentation in the mailin link is pretty bomb.
+This had the benefit of allowing the user to run this tool with an alternate SMTP server or any system that
+sent webhooks.
 
-As part of this, you will probably have to create an MX record for your server.
-Details are also in the [mailin documentation][mailin].
+However due to the lack of maintenance of mailin and other ultra-lightweight email-to-webhook tools I found,
+I've decided to bundle in the SMTP server as part of venmo-to-lunch-money.
 
-After you have your server set up and ready to accept emails, you can run mailin
-with a command like
-
-```
-mailin --webhook http://localhost:3001/incoming-emails --disable-spam-score
-```
-
-This will instruct mailin to convert emails to JSON objects and POST them to your locally running venmo-to-lunch-money
-instance.
-
-:information_source: I'd recommend creating a service to run mailin at startup.
+If you're interested in using this tool with a different workflow, feel free to fork or send a PR. :)
 
 ### Set up venmo-to-lunch-money
 
@@ -68,7 +61,7 @@ npm start
 
 4. Send emails to `nobody@myself.my-server.com`.
 
-Where "myself.my-server.com" is the MX record and server you set up running mailin.
+Where "myself.my-server.com" is your mail server (you may need to set up MX records).
 
 ## Configuration
 

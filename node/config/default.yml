@@ -8,17 +8,21 @@ express:
   http-host: 'localhost'
   http-endpoint: '/incoming-emails'
 
+smtp-server:
+  listen-port: 25
+
 lunch-money:
   dryrun: false
   api-token: ''
   # Existing tags to add to created transactions.
+  # TODO(billycao): Not yet supported.
   include-tags: []
 
 venmo-email:
   # TODO(billycao): Extract currency from email.
   currency: 'usd'
-  # Note to set for new Lunch Money transactions.
-  note: ''
+  # If true, add 'VenmoID 000000000000000' to note of transaction.
+  add-note: true
   # One of "cleared" or "uncleared". See https://lunchmoney.dev/#transaction-object
   state: 'uncleared'
   apply-rules: true
