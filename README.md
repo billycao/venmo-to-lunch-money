@@ -7,15 +7,9 @@ correctness or privacy conciousness.
 
 **Use at your own risk.**
 
-## Table of Contents
-
-- [Background](#Background)
-- [Installation](#Installation)
-- [Configuration](#Configuration)
-
+<!--
 ## Background
 
-<!--
 ### How it works
 
 ![Data Flow](doc/img/data-flow-diagram.png)
@@ -26,7 +20,37 @@ correctness or privacy conciousness.
 4. **venmo-to-lunch-money** creates a Lunch Money transaction.
 -->
 
-## Installation
+## Run with Docker
+
+1. Install Docker.
+2. Create a `docker-compose.yml` file with the following contents.
+
+```
+---
+version: '3.8'
+services:
+  venmo-to-lunch-money:
+    image: billycao/venmo-to-lunch-money
+    container_name: venmo-to-lunch-money
+    environment:
+      - API_TOKEN=
+    ports:
+      - 25:25
+    volumes:
+      - data:/data
+    restart: unless-stopped
+
+volumes:
+  data:
+```
+
+3. Add your [Lunch Money access token][lunch-money-token] after `API_TOKEN=` and then run
+
+```
+docker compose up
+```
+
+## Local Installation
 
 Previously, venmo-to-lunch-money used an external service ([mailin][mailin]) to receive emails
 and POST those emails to it as a webhook.
@@ -83,4 +107,5 @@ I'll try to remain responsive to all issues and PRs, and you can reach me at
 [the.billy.c@gmail.com](mailto:the.billy.c@gmail.com).
 
 [lunch-money]: https://lunchmoney.app/
+[lunch-money-token]: https://my.lunchmoney.app/developers
 [mailin]: https://www.npmjs.com/package/mailin
