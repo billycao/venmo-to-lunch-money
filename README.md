@@ -20,6 +20,9 @@ correctness or privacy conciousness.
 4. **venmo-to-lunch-money** creates a Lunch Money transaction.
 -->
 
+> :warning: This SMTP server runs with no security or keys, so is only appropriate to run
+> locally. Feel free to fork to improve smtp-server security.
+
 ## Run with Docker
 
 1. Install Docker.
