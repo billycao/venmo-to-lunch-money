@@ -6,8 +6,8 @@ const formidable = require('formidable');
 const fs = require('fs');
 const path = require('path');
 
-const keyFileStorage = require('key-file-storage').default(
-  path.join(__dirname, 'bin'));
+const dataDir = process.env.DATA_DIR || __dirname;
+const keyFileStorage = require('key-file-storage').default(dataDir);
 const LunchMoney = require('lunch-money').default;
 const NodeCache = require('node-cache');
 const simpleParser = require('mailparser').simpleParser;

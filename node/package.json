@@ -18,11 +18,13 @@
   "devDependencies": {
     "@types/mailparser": "^3.4.0",
     "@types/node": "^18.14.0",
-    "mocha": "^10.2.0"
+    "mocha": "^10.2.0",
+    "typescript": "^4.9.5"
   },
   "scripts": {
-    "test": "mocha",
-    "start": "node built/app.js"
+    "build": "tsc",
+    "start": "node built/app.js",
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC"

@@ -3,9 +3,6 @@ version: '3.8'
 services:
   venmo-to-lunch-money:
     image: billycao/venmo-to-lunch-money
-    container_name: venmo-to-lunch-money
-    environment:
-      - API_TOKEN=
     build:
       context: ..
       dockerfile: docker/Dockerfile
@@ -13,4 +10,14 @@ services:
         - billycao/venmo-to-lunch-money
       labels:
         - "maintainer=billy@billycao.com"
+    container_name: venmo-to-lunch-money
+    environment:
+      - API_TOKEN=
+    ports:
+      - 25:25
+    volumes:
+      - data:/data
     restart: unless-stopped
+
+volumes:
+  data:
