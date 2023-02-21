@@ -44,9 +44,10 @@ If you're interested in using this tool with a different workflow, feel free to 
 1. Clone the repo:
 ```
 git clone git@github.com:billycao/venmo-to-lunch-money.git
+cd venmo-to-lunch-money
 ```
 
-2. Add your Lunch Money API Token to `/config/default.yml`.
+2. Add your Lunch Money API Token to `config/default.yml`.
 ```yaml
 lunch-money:
   api-token: '1234567890123456789013245678901213457890'
@@ -54,19 +55,19 @@ lunch-money:
 
 3. Start venmo-to-lunch-money.
 ```
-cd venmo-to-lunch-money
 npm install
+npm build
 npm start
 ```
 
-4. Send emails to `nobody@myself.my-server.com`.
+4. Send emails to `nobody@localhost`.
 
-Where "myself.my-server.com" is your mail server (you may need to set up MX records).
+Where "localhost" is the host at which venmo-to-lunch-money is running. (you may need to set up MX records)
 
 ## Configuration
 
 Additonal configuration settings like notes on transactions, currency, etc. can
-be found in `config/default.yml`. System regexes and selectors for email parsing
+be found in `config/default.yml`. Regexes and selectors for email parsing
 can also be found there, so if Venmo changes their email format and something breaks,
 that would be the first place to look.
 
