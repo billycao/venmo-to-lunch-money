@@ -70,7 +70,7 @@ function processEmail(email: ParsedMail): void {
   if (logdir) {
     if (fs.existsSync(logdir)) {
       let logfile = path.join(logdir, email.subject + '.txt');
-      fs.writeFile(logfile, email, (err: any)  => {
+      fs.writeFile(logfile, JSON.stringify(email), (err: any)  => {
         if (err) {
           console.error('Error logging email to file:', err);
         }
