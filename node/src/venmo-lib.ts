@@ -43,16 +43,16 @@ class VenmoEmail {
     return [null, null];
   }
 
-  getPaymentID(): number {
+  getPaymentID(): string | 'Unknown' {
     let idMatch = this.email.text.match(this.options.idRegex);
     if (idMatch) {
       if ('groups' in idMatch && 'id' in idMatch['groups']) {
-        return parseInt(idMatch['groups']['id']);
+        return idMatch['groups']['id'];
       }
       console.error('Missing named capture group "id". Is id-regex formatted correctly?');
-      return 0;
+      return 'Unknown';
     }
-    return 0;
+    return 'Unknown';
   }
 
   getPaymentDateAsISOString(): string {

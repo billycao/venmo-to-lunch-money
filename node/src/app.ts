@@ -26,24 +26,28 @@ import { Tag, DraftTransaction } from 'lunch-money';
 import { ParsedMail } from 'mailparser';
 import { VenmoEmailOptions } from './venmo-lib';
 
-// Fetch and validate venmo-email config options.
-let venmoEmailOptions: VenmoEmailOptions = {
-  addNote: config.get('venmo-email.add-note'),
-  defaultCurrency: config.get('venmo-email.currency'),
-  defaultState: config.get('venmo-email.state'),
-  memoCSSSelector: config.get('venmo-email.memo-css-selector'),
-  tags: config.get('lunch-money.include-tags'),
+export function getOptionsFromConfig(): VenmoEmailOptions {
+  // Fetch and validate venmo-email config options.
+  let venmoEmailOptions: VenmoEmailOptions = {
+    addNote: config.get('venmo-email.add-note'),
+    defaultCurrency: config.get('venmo-email.currency'),
+    defaultState: config.get('venmo-email.state'),
+    memoCSSSelector: config.get('venmo-email.memo-css-selector'),
+    tags: config.get('lunch-money.include-tags'),
 
-  dateRegex: new RegExp(config.get('venmo-email.date-regex')),
-  idRegex: new RegExp(config.get('venmo-email.id-regex')),
-  subjectDebitRegexes: [] as RegExp[],
-  subjectCreditRegexes: [] as RegExp[],
-}
-for (let regexStr of config.get('venmo-email.subject-debit-regexes')) {
-  venmoEmailOptions.subjectDebitRegexes.push(new RegExp(regexStr));
-}
-for (let regexStr of config.get('venmo-email.subject-credit-regexes')) {
-  venmoEmailOptions.subjectCreditRegexes.push(new RegExp(regexStr));
+    dateRegex: new RegExp(config.get('venmo-email.date-regex')),
+    idRegex: new RegExp(config.get('venmo-email.id-regex')),
+    subjectDebitRegexes: [] as RegExp[],
+    subjectCreditRegexes: [] as RegExp[],
+  }
+  for (let regexStr of config.get('venmo-email.subject-debit-regexes')) {
+    venmoEmailOptions.subjectDebitRegexes.push(new RegExp(regexStr));
+  }
+  for (let regexStr of config.get('venmo-email.subject-credit-regexes')) {
+    venmoEmailOptions.subjectCreditRegexes.push(new RegExp(regexStr));
+  }
+
+  return venmoEmailOptions;
 }
 
 // Sends transaction to Lunch Money unless transaction is duplicate.
@@ -78,14 +82,14 @@ function processEmail(email: ParsedMail): void {
     }
   }
 
-  let venmoEmail = new VenmoEmail(email, venmoEmailOptions);
+  let venmoEmail = new VenmoEmail(email, getOptionsFromConfig());
   if (config.get('lunch-money.dryrun')) {
     console.warn('dryrun == true, skipping send.');
     return;
   }
 
   const venmoID = venmoEmail.getPaymentID();
-  if (!venmoID) {
+  if (venmoID == 'Unknown') {
     console.error('Could not get Venmo payment ID. Skipping...');
     return;
   }
