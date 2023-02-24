@@ -67,11 +67,16 @@ class VenmoEmail {
   }
 
   getPaymentMemo() {
-    let htmlRoot = htmlParser.parse(this.email.text);
+    let emailBody = this.email.html;
+    if (!emailBody) {
+      console.warn('Email did not contain HTML body. Attempting memo extraction with text body.');
+      emailBody = this.email.text;
+    }
+    let htmlRoot = htmlParser.parse(emailBody);
     let memoElems = htmlRoot.querySelectorAll(this.options.memoCSSSelector);
     if (!memoElems.length) {
       console.error('Could not extract memo from email. Is memo-css-selector correct?');
-      return
+      return;
     }
     return memoElems[0].text;
   }

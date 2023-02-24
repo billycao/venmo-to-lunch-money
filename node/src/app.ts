@@ -69,6 +69,8 @@ function sendTransaction(venmoID: number, draftTransaction: DraftTransaction): v
 }
 
 function processEmail(email: ParsedMail): void {
+  console.log(`Processing email "${email.subject})"`);
+
   // Log email to file.
   let logdir = config.get('logging.logdir');
   if (logdir) {
