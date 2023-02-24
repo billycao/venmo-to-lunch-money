@@ -28,7 +28,8 @@ COPY --from=ts-build /usr/src/app/package.json .
 COPY --from=ts-build /usr/src/app/package-lock.json .
 RUN npm ci
 
-COPY node/config ./config
+COPY node/config/default.yml ./config/default.yml
+COPY node/config/docker.yml ./config/docker.yml
 COPY --from=ts-build --chown=node:node /usr/src/app/built ./built
 
 USER node
