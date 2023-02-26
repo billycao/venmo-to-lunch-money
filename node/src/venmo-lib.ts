@@ -44,6 +44,7 @@ class VenmoEmail {
   }
 
   getPaymentID(): string | 'Unknown' {
+    let emailBody = this.email.text || this.email.html;
     let idMatch = this.email.text.match(this.options.idRegex);
     if (idMatch) {
       if ('groups' in idMatch && 'id' in idMatch['groups']) {

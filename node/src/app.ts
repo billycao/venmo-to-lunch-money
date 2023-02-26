@@ -75,14 +75,26 @@ function processEmail(email: ParsedMail): void {
   let logdir = config.get('logging.logdir');
   if (logdir) {
     if (fs.existsSync(logdir)) {
-      let logFile = path.join(logdir, email.subject + '.txt');
-      fs.writeFile(logFile, JSON.stringify(email), (err: any)  => {
-        if (err) {
-          console.error('Error logging email to file:', err);
-        } else {
-          console.log(`Email written to ${logFile}`);
-        }
-      });
+      if (email.text) {
+        let logFileTxt = path.join(logdir, email.subject + '.txt');
+        fs.writeFile(logFileTxt, email.text, (err: any)  => {
+          if (err) {
+            console.error('Error logging email to file:', err);
+          } else {
+            console.log(`Email written to ${logFileTxt}`);
+          }
+        });
+      }
+      if (email.html) {
+        let logFileHtml = path.join(logdir, email.subject + '.html');
+        fs.writeFile(logFileHtml, email.html, (err: any)  => {
+          if (err) {
+            console.error('Error logging email to file:', err);
+          } else {
+            console.log(`Email written to ${logFileHtml}`);
+          }
+        });
+      }
     }
   }
 
@@ -95,6 +107,11 @@ function processEmail(email: ParsedMail): void {
   const venmoID = venmoEmail.getPaymentID();
   if (venmoID == 'Unknown') {
     console.error('Could not get Venmo payment ID. Skipping...');
+    return;
+  }
+  const memo = venmoEmail.getPaymentMemo();
+  if (venmoID == 'Unknown') {
+    console.error('Could not get Venmo memo. Skipping...');
     return;
   }
   const isDuplicate = keyFileStorage[venmoID];
