@@ -44,8 +44,10 @@ class VenmoEmail {
   }
 
   getPaymentID(): string | 'Unknown' {
-    let emailBody = this.email.text || this.email.html;
     let idMatch = this.email.text.match(this.options.idRegex);
+    if (this.email.html && !idMatch) {
+      idMatch = this.email.html.match(this.options.idRegex);
+    }
     if (idMatch) {
       if ('groups' in idMatch && 'id' in idMatch['groups']) {
         return idMatch['groups']['id'];
@@ -58,6 +60,9 @@ class VenmoEmail {
 
   getPaymentDateAsISOString(): string {
     let dateMatch = this.email.text.match(this.options.dateRegex);
+    if (!dateMatch && this.email.html) {
+      dateMatch = this.email.html.match(this.options.dateRegex);
+    }
     if (dateMatch) {
       let dateObj = new Date(Date.parse(dateMatch['groups']['date']));
       dateObj.setMinutes(dateObj.getMinutes() - dateObj.getTimezoneOffset());

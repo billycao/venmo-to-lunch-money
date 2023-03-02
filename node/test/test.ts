@@ -25,8 +25,8 @@ function getEmailFromTestdata(
       'headerLines': [],
       'subject': subject,
       'date': emailDate,
-      'html': '',
-      'text': emailHTML,
+      'html': emailHTML,
+      'text': '',
     };
 }
 
