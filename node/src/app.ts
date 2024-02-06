@@ -9,7 +9,6 @@ const path = require('path');
 const dataDir = process.env.DATA_DIR || __dirname;
 const keyFileStorage = require('key-file-storage').default(dataDir);
 const LunchMoney = require('lunch-money').default;
-const NodeCache = require('node-cache');
 const simpleParser = require('mailparser').simpleParser;
 const SMTPServer = require("smtp-server").SMTPServer;
 
@@ -17,10 +16,13 @@ const VenmoEmail = require('./venmo-lib');
 
 const app = express();
 
-const apiToken = process.env.API_TOKEN || config.get('lunch-money.api-token')
-const lunchMoney = new LunchMoney({ token: apiToken });
-
-const lmCache = new NodeCache();
+let lunchMoneys: {[key: string]: typeof LunchMoney} = {};
+for (let account of config.get('lunch-money.accounts')){
+  console.info(`Email to contains: ${account['email-to-contains']}`);
+  console.info(`Access token: ${account['api-token']}`);
+  let lunchMoney = new LunchMoney({ token: account['api-token'] });
+  lunchMoneys[account['email-to-contains']] = lunchMoney;
+}
 
 import { Tag, DraftTransaction } from 'lunch-money';
 import { ParsedMail } from 'mailparser';
@@ -51,21 +53,29 @@ export function getOptionsFromConfig(): VenmoEmailOptions {
 }
 
 // Sends transaction to Lunch Money unless transaction is duplicate.
-function sendTransaction(venmoID: number, draftTransaction: DraftTransaction): void {
-  lunchMoney.createTransactions(
-    [draftTransaction],
-    config.get('venmo-email.apply-rules'),
-    config.get('venmo-email.check-for-recurring'),
-    false  // debitAsNegative
-  )
-  .then(
-    (res: any) => {
-      let id = res.ids[0];
-      console.log(`Successfully created transaction ID ${id}`);
-      keyFileStorage[venmoID] = true;
-    },
-    (err: any) => { console.error(err) }
-  );
+function sendTransaction(emailTo: string, venmoID: number, draftTransaction: DraftTransaction): void {
+  for (let account of config.get('lunch-money.accounts')) {
+    const emailToContains = account['email-to-contains'];
+    if (emailTo.includes(emailToContains)) {
+      console.info(`Creating Lunch Money txn sent to ${emailTo}...`);
+      lunchMoneys[emailToContains].createTransactions(
+        [draftTransaction],
+        config.get('venmo-email.apply-rules'),
+        config.get('venmo-email.check-for-recurring'),
+        false  // debitAsNegative
+      )
+      .then(
+        (res: any) => {
+          let id = res.ids[0];
+          console.log(`Successfully created transaction ID ${id}`);
+          keyFileStorage[venmoID] = true;
+        },
+        (err: any) => { console.error(err) }
+      );
+      return;
+    }
+  }
+  console.error(`Could not find valid email-to-contains config for ${emailTo}`);
 }
 
 function processEmail(email: ParsedMail): void {
@@ -116,15 +126,17 @@ function processEmail(email: ParsedMail): void {
   }
   const isDuplicate = keyFileStorage[venmoID];
   if (isDuplicate) {
-    console.warn(`Duplicate transaction ID ${venmoID}. Skipping...`);
-    return;
+    console.warn(`Duplicate transaction ID ${venmoID}.`);
+    // console.warn(`Duplicate transaction ID ${venmoID}. Skipping...`);
+    // return;
   }
 
   const draftTransaction = venmoEmail.getDraftTransaction();
   if (draftTransaction) {
     console.log('Sending transaction to Lunch Money:');
     console.log(draftTransaction);
-    sendTransaction(venmoID, draftTransaction);
+    // @ts-ignore
+    sendTransaction(email.to.text, venmoID, draftTransaction);
   } else {
     console.error('Could not create draftTransaction from email. Skipping...');
   }

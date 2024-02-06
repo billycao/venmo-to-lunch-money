@@ -13,10 +13,18 @@ smtp-server:
 
 lunch-money:
   dryrun: false
-  api-token: ''
   # Existing tags to add to created transactions.
   # TODO(billycao): Not yet supported.
   include-tags: []
+  accounts:
+    -
+      email-to-contains: 'foo'
+      api-token: ''
+    # -
+    #   email-to-contains: 'bar'
+    #   api-token: ''
+
+
 
 venmo-email:
   # TODO(billycao): Extract currency from email.
