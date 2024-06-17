@@ -1,3 +1,5 @@
+> :warning: This project is no longer necessary as **Plaid has added support for Venmo.** :)
+
 # Venmo to Lunch Money
 
 A simple SMTP server that transforms Venmo emails into [Lunch Money][lunch-money] transactions.
